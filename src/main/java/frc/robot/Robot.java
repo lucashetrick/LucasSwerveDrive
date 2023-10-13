@@ -7,7 +7,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.RunDrivebase;
 import frc.robot.commands.SwerveTest;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.OI;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -17,7 +20,9 @@ import frc.robot.commands.SwerveTest;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-  private SwerveTest swervetest;
+  private Command runDrivebase = new RunDrivebase(Drivetrain.getDrivetrain());
+
+  private OI oi = OI.getOi();
 
   private RobotContainer m_robotContainer;
 
@@ -80,14 +85,14 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    swervetest.schedule();
-
     
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    runDrivebase.schedule();
+  }
 
   @Override
   public void testInit() {

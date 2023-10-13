@@ -30,7 +30,7 @@ public final class Constants {
   public static final int RIGHT_MODULE_TURN_2 = 12; // 8
 
   // Joystick Ids
-  public static final int RIGHT_JOYSTICK = 1;
+  public static final int RIGHT_JOYSTICK = 0;
   public static final int JOYSTICK_BUTTON = 1;
 
   public static class OperatorConstants {

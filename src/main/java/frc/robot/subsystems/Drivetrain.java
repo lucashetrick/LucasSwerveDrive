@@ -41,6 +41,7 @@ public class Drivetrain extends SubsystemBase {
   };
 
   int index = 0;
+  int arrayLength = driveMotors.length-1;
 
 
   /** Creates a new Drivebase. */
@@ -50,21 +51,36 @@ public class Drivetrain extends SubsystemBase {
   
 
   public void switchMotors() {
+
     
-    if (index > driveMotors.length) {
+    
+    if (index > arrayLength-1) {
+      System.out.println(arrayLength);
       index = 0;
     }
+    
 
     index++;
+
+    System.out.println("index = " + index);
   }
 
 
   public void setDrive() {
 
-    driveMotors[index].set(TalonFXControlMode.PercentOutput, .5);
+    if (index != 0) {
+      driveMotors[index-1].set(TalonFXControlMode.PercentOutput, 0);
+      turnMotors[index-1].set(0);
+    }
 
-    turnMotors[index].set(.5);
+    System.out.println(index);
+
+    driveMotors[index].set(TalonFXControlMode.PercentOutput, .2);
+
+    turnMotors[index].set(.2);
   }
+
+
 
   // public void setDrive(TalonFX driveModule, double driveMotorSpeed, 
   //                     CANSparkMax turnModule, double turnMotorSpeed) {
@@ -83,6 +99,7 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
+    
     // This method will be called once per scheduler run
   }
 }

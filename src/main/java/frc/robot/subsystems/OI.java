@@ -8,9 +8,11 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
+import frc.robot.commands.SwerveTest;
 
 public class OI extends SubsystemBase {
   private static OI oi;
+
   Drivetrain drivetrain = Drivetrain.getDrivetrain();
   /** Creates a new OI. */
 
@@ -22,6 +24,8 @@ public class OI extends SubsystemBase {
   public OI() {
     rightJoystick = new Joystick(Constants.RIGHT_JOYSTICK);
     switchMotors = new JoystickButton(rightJoystick, Constants.JOYSTICK_BUTTON);
+
+    switchMotors.onTrue(new SwerveTest(drivetrain));
   }
 
   @Override

@@ -6,15 +6,15 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.OI;
 
-public class SwerveTest extends CommandBase {
-  /** Creates a new SwerveTest. */
+public class RunDrivebase extends CommandBase {
+  /** Creates a new RunDrivebase. */
 
   private Drivetrain drivetrain;
 
-  public SwerveTest(Drivetrain drivetrain) {
+  public RunDrivebase(Drivetrain drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
+
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
   }
@@ -22,19 +22,13 @@ public class SwerveTest extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
-    System.out.println("checkpoint");
-
-    drivetrain.switchMotors();
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
-    
-
+    drivetrain.setDrive();
   }
 
   // Called once the command ends or is interrupted.
