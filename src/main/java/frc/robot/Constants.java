@@ -18,21 +18,45 @@ package frc.robot;
  */
 public final class Constants {
 
-  // Motor Ids
-  public static final int LEFT_MODULE_DRIVE_1 = 1;
-  public static final int LEFT_MODULE_DRIVE_2 = 3;
-  public static final int RIGHT_MODULE_DRIVE_1 = 5;
-  public static final int RIGHT_MODULE_DRIVE_2 = 7;
 
-  public static final int LEFT_MODULE_TURN_1 = 9; // 2
-  public static final int LEFT_MODULE_TURN_2 = 10; // 4
-  public static final int RIGHT_MODULE_TURN_1 = 11; // 6
-  public static final int RIGHT_MODULE_TURN_2 = 12; // 8
+  //Motor Ids
+
+    //Drive Motors
+    public static final int RIGHT_FRONT_DRIVE = 1;
+    public static final int RIGHT_BACK_DRIVE = 3;
+    public static final int LEFT_FRONT_DRIVE = 5;
+    public static final int LEFT_BACK_DRIVE = 7;
+    
+    //Turn Motors
+    public static final int RIGHT_FRONT_TURN = 9;
+    public static final int RIGHT_BACK_TURN = 10;
+    public static final int LEFT_FRONT_TURN = 11;
+    public static final int LEFT_BACK_TURN = 12;
+
+
+  //Driving Encoders
+  public static final double TALON_GEAR_RATIO = 0;  //change this
+  public static final double WHEEL_DIAMETER = 0; //change this
+  public static final int TALON_TICKS_PER_MOTOR_REV = 2048;
+  public static final double TICKS_PER_FOOT = (TALON_TICKS_PER_MOTOR_REV * TALON_GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
+
+
+  //Turning Encoders
+  public static final double CAN_GEAR_RATIO = 0;
+  public static final int CAN_TICKS_PER_MOTOR_REV = 496;
+  public static final double TICKS_PER_REV = (CAN_TICKS_PER_MOTOR_REV * CAN_GEAR_RATIO ) / 360; //Not sure about this part
+  
 
   // Joystick Ids
   public static final int RIGHT_JOYSTICK = 0;
   public static final int JOYSTICK_BUTTON = 1;
 
+
+
+
+
+
+  
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }

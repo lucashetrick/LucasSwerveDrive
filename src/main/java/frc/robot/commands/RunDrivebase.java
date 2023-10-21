@@ -27,8 +27,8 @@ public class RunDrivebase extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    drivetrain.setDrive();
+    // drivetrain.setDrive();
+    drivetrain.swerveTest();
   }
 
   // Called once the command ends or is interrupted.

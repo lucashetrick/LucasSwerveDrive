@@ -23,10 +23,7 @@ public class SwerveTest extends CommandBase {
   @Override
   public void initialize() {
 
-    System.out.println("checkpoint");
-
     drivetrain.switchMotors();
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -34,7 +31,7 @@ public class SwerveTest extends CommandBase {
   public void execute() {
 
     
-
+  
   }
 
   // Called once the command ends or is interrupted.

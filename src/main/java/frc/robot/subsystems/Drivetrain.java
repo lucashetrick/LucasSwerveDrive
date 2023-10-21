@@ -15,91 +15,130 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Drivetrain extends SubsystemBase {
+
   private static Drivetrain drivetrain;
 
-  TalonFX leftMotorDrive1 = new TalonFX(Constants.LEFT_MODULE_DRIVE_1);
-  TalonFX leftMotorDrive2 = new TalonFX(Constants.LEFT_MODULE_DRIVE_2);
-  TalonFX rightMotorDrive1 = new TalonFX(Constants.RIGHT_MODULE_DRIVE_1);
-  TalonFX rightMotorDrive2 = new TalonFX(Constants.RIGHT_MODULE_DRIVE_2);
+  TalonFX leftFrontDrive = new TalonFX(Constants.LEFT_FRONT_DRIVE);
+  TalonFX rightFrontDrive = new TalonFX(Constants.RIGHT_FRONT_DRIVE);
+  TalonFX leftBackDrive = new TalonFX(Constants.LEFT_BACK_DRIVE);
+  TalonFX rightBackDrive = new TalonFX(Constants.RIGHT_BACK_DRIVE);
 
-  CANSparkMax leftTurnMotor1 = new CANSparkMax(Constants.LEFT_MODULE_TURN_1, MotorType.kBrushless);
-  CANSparkMax leftTurnMotor2 = new CANSparkMax(Constants.LEFT_MODULE_DRIVE_2, MotorType.kBrushless);
-  CANSparkMax rightTurnMotor1 = new CANSparkMax(Constants.RIGHT_MODULE_TURN_1, MotorType.kBrushless);
-  CANSparkMax rightTurnMotor2 = new CANSparkMax(Constants.RIGHT_MODULE_TURN_2, MotorType.kBrushless);
+  CANSparkMax leftFrontTurn = new CANSparkMax(Constants.LEFT_FRONT_TURN, MotorType.kBrushless);
+  CANSparkMax rightFrontTurn = new CANSparkMax(Constants.RIGHT_FRONT_TURN, MotorType.kBrushless);
+  CANSparkMax leftBackTurn = new CANSparkMax(Constants.LEFT_BACK_TURN, MotorType.kBrushless);
+  CANSparkMax rightBackTurn = new CANSparkMax(Constants.RIGHT_BACK_TURN, MotorType.kBrushless);
+
+
 
   TalonFX[] driveMotors = {
-      leftMotorDrive1,
-      leftMotorDrive2,
-      rightMotorDrive1,
-      rightMotorDrive2
+
+      leftFrontDrive,   
+      rightFrontDrive,
+      leftBackDrive,
+      rightBackDrive
   };
   CANSparkMax[] turnMotors = {
-      leftTurnMotor1,
-      leftTurnMotor2,
-      rightTurnMotor1,
-      rightTurnMotor2
+
+      leftFrontTurn, 
+      rightFrontTurn,
+      leftBackTurn,
+      rightBackTurn
   };
 
+
+
   int index = 0;
-  int arrayLength = driveMotors.length-1;
+  int arrayLength = driveMotors.length;
 
+  
 
-  /** Creates a new Drivebase. */
+  /** Creates a new Drivetrain. */
   private Drivetrain() {
+
   }
 
   
 
-  public void switchMotors() {
+  public void setDriveMotor (TalonFX driveMotor, double speed) {
+    driveMotor.set(TalonFXControlMode.PercentOutput, speed);
+  }
 
-    
-    
-    if (index > arrayLength-1) {
-      System.out.println(arrayLength);
-      index = 0;
+
+  public void setTurnMotor (CANSparkMax turnMotor, double speed) {
+    turnMotor.set(speed);
+  }
+
+
+
+  public double getDriveEncoder (TalonFX driveMotor) {
+    return driveMotor.getSelectedSensorPosition() / Constants.TICKS_PER_FOOT;
+  }
+
+
+
+  public double getTurnEncoder (CANSparkMax turnMotor) {
+    return turnMotor.getEncoder().getPosition() / Constants.TICKS_PER_REV;
+  }
+
+
+  
+
+  
+
+  public void switchMotors() {
+    if (index > arrayLength - 2) {
+      index = -1;
     }
-    
 
     index++;
-
     System.out.println("index = " + index);
-  }
 
-
-  public void setDrive() {
 
     if (index != 0) {
-      driveMotors[index-1].set(TalonFXControlMode.PercentOutput, 0);
-      turnMotors[index-1].set(0);
+
+      //Turn off the previous module
+      setDriveMotor(driveMotors[index-1], 0);
+      setTurnMotor(turnMotors[index-1], 0);
+
+    } else if (index == 0) {
+
+      //Turn off the previous module if index=0
+      setDriveMotor(driveMotors[arrayLength-1], 0);
+      setTurnMotor(turnMotors[arrayLength-1], 0);
     }
-
-    System.out.println(index);
-
-    driveMotors[index].set(TalonFXControlMode.PercentOutput, .2);
-
-    turnMotors[index].set(.2);
   }
 
 
 
-  // public void setDrive(TalonFX driveModule, double driveMotorSpeed, 
-  //                     CANSparkMax turnModule, double turnMotorSpeed) {
+
+  public void swerveTest() {
+
+      setDriveMotor(driveMotors[index], .2);
+      setTurnMotor(turnMotors[index], .2);
+  }
 
 
-  //   driveModule.set(TalonFXControlMode.PercentOutput, driveMotorSpeed);
-  //   turnModule.set(turnMotorSpeed);
-  // }
+
+
+  public void allAtOnce() {
+
+    for (int i = 0; i<arrayLength; i++) {
+      setDriveMotor(driveMotors[i], .2);
+    }
+
+    for (int i = 0; i<arrayLength; i++) {
+      setTurnMotor(turnMotors[i], .2);
+    }
+
+  }
+
+
+
 
   public static Drivetrain getDrivetrain() {
     if (drivetrain == null) {
       drivetrain = new Drivetrain();
     }
     return drivetrain;
-  }
-
-  @Override
-  public void periodic() {
-    
-    // This method will be called once per scheduler run
   }
 }
