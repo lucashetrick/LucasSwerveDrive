@@ -60,24 +60,36 @@ public class Drivetrain extends SubsystemBase {
   
 
   public void setDriveMotor (TalonFX driveMotor, double speed) {
+
     driveMotor.set(TalonFXControlMode.PercentOutput, speed);
   }
 
 
   public void setTurnMotor (CANSparkMax turnMotor, double speed) {
+
     turnMotor.set(speed);
   }
 
 
 
   public double getDriveEncoder (TalonFX driveMotor) {
-    return driveMotor.getSelectedSensorPosition() / Constants.TICKS_PER_FOOT;
+
+    double dEncoder = driveMotor.getSelectedSensorPosition() / Constants.TICKS_PER_FOOT;
+
+    System.out.println("Drive Encoder: " + dEncoder);
+
+    return dEncoder;
   }
 
 
 
   public double getTurnEncoder (CANSparkMax turnMotor) {
-    return turnMotor.getEncoder().getPosition() / Constants.TICKS_PER_REV;
+
+    double tEncoder = turnMotor.getEncoder().getPosition() / Constants.TICKS_PER_REV;
+
+    System.out.println("Turn Encoder " + tEncoder);
+
+    return tEncoder;
   }
 
 
@@ -121,14 +133,27 @@ public class Drivetrain extends SubsystemBase {
 
 
   public void allAtOnce() {
+    
+    setDriveMotor(driveMotors[0], .2);
+    setDriveMotor(driveMotors[1], .2);
+    setDriveMotor(driveMotors[2], .2);
+    setDriveMotor(driveMotors[3], .2);
 
-    for (int i = 0; i<arrayLength; i++) {
-      setDriveMotor(driveMotors[i], .2);
-    }
+    setTurnMotor(turnMotors[0], .2);
+    setTurnMotor(turnMotors[1], .2);
+    setTurnMotor(turnMotors[2], .2);
+    setTurnMotor(turnMotors[3], .2);
 
-    for (int i = 0; i<arrayLength; i++) {
-      setTurnMotor(turnMotors[i], .2);
-    }
+
+    // for (int i = 0; i<arrayLength; i++) {
+    //   setDriveMotor(driveMotors[i], .2);
+    // }
+
+    // for (int i = 0; i<arrayLength; i++) {
+    //   setTurnMotor(turnMotors[i], .2);
+    // }
+
+
 
   }
 
