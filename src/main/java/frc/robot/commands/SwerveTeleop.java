@@ -4,34 +4,40 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 
-public class SwerveTest extends CommandBase {
-  /** Creates a new SwerveTest. */
+public class SwerveTeleop extends CommandBase {
+  /** Creates a new SwerveTeleop. */
+  Drivetrain drivetrain = Drivetrain.getInstance();
+  OI oi;
 
-  private Drivetrain drivetrain;
+  public SwerveTeleop(Drivetrain drivetrain, OI oi) {
 
-  public SwerveTest(Drivetrain drivetrain) {
-    // Use addRequirements() here to declare subsystem dependencies.
     this.drivetrain = drivetrain;
-    addRequirements(drivetrain);
+    this.oi = oi;
+
+    addRequirements(drivetrain, oi);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
-    drivetrain.switchMotors();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
-    
-  
+    drivetrain.setDrive(
+        // applying deadband and setting drive
+        MathUtil.applyDeadband(oi.getLeftX(), .05)*Constants.MAX_MODULE_SPEED,
+        MathUtil.applyDeadband(oi.getLeftY(), .05)*Constants.MAX_MODULE_SPEED,
+        MathUtil.applyDeadband(oi.getRightX(), .05)*90,
+        false);
   }
 
   // Called once the command ends or is interrupted.

@@ -4,163 +4,96 @@
 
 package frc.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Drivetrain extends SubsystemBase {
 
   private static Drivetrain drivetrain;
+  AHRS gyro = new AHRS();
+  ChassisSpeeds speeds;
 
-  TalonFX leftFrontDrive = new TalonFX(Constants.LEFT_FRONT_DRIVE);
-  TalonFX rightFrontDrive = new TalonFX(Constants.RIGHT_FRONT_DRIVE);
-  TalonFX leftBackDrive = new TalonFX(Constants.LEFT_BACK_DRIVE);
-  TalonFX rightBackDrive = new TalonFX(Constants.RIGHT_BACK_DRIVE);
+  // locations of the modules
+  Translation2d leftFrontLocation = new Translation2d(Constants.FEET_TO_METERS * Constants.TRANSLATION_X,
+      Constants.FEET_TO_METERS * Constants.TRANSLATION_Y);
 
-  CANSparkMax leftFrontTurn = new CANSparkMax(Constants.LEFT_FRONT_TURN, MotorType.kBrushless);
-  CANSparkMax rightFrontTurn = new CANSparkMax(Constants.RIGHT_FRONT_TURN, MotorType.kBrushless);
-  CANSparkMax leftBackTurn = new CANSparkMax(Constants.LEFT_BACK_TURN, MotorType.kBrushless);
-  CANSparkMax rightBackTurn = new CANSparkMax(Constants.RIGHT_BACK_TURN, MotorType.kBrushless);
+  Translation2d rightFrontLocation = new Translation2d(Constants.FEET_TO_METERS * Constants.TRANSLATION_X,
+      -Constants.FEET_TO_METERS * Constants.TRANSLATION_Y);
 
+  Translation2d leftBackLocation = new Translation2d(-Constants.FEET_TO_METERS * Constants.TRANSLATION_X,
+      Constants.FEET_TO_METERS * Constants.TRANSLATION_Y);
 
+  Translation2d rightBackLocation = new Translation2d(-Constants.FEET_TO_METERS * Constants.TRANSLATION_X,
+      -Constants.FEET_TO_METERS * Constants.TRANSLATION_Y);
 
-  TalonFX[] driveMotors = {
-
-      leftFrontDrive,   
-      rightFrontDrive,
-      leftBackDrive,
-      rightBackDrive
-  };
-  CANSparkMax[] turnMotors = {
-
-      leftFrontTurn, 
-      rightFrontTurn,
-      leftBackTurn,
-      rightBackTurn
-  };
+      
+  SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+      leftFrontLocation, rightFrontLocation, leftBackLocation, rightBackLocation);
 
 
+  SwerveModule frontLeft = new SwerveModule(Constants.LEFT_FRONT_DRIVE, Constants.LEFT_FRONT_TURN,
+      Constants.LEFT_FRONT_CAN_CODER, Constants.FRONT_LEFT_OFFSET);
 
-  int index = 0;
-  int arrayLength = driveMotors.length;
+  SwerveModule frontRight = new SwerveModule(Constants.RIGHT_FRONT_DRIVE, Constants.RIGHT_FRONT_TURN,
+      Constants.RIGHT_FRONT_CAN_CODER, Constants.FRONT_RIGHT_OFFSET);
 
-  
+  SwerveModule backLeft = new SwerveModule(Constants.LEFT_BACK_DRIVE, Constants.LEFT_BACK_TURN,
+      Constants.LEFT_BACK_CAN_CODER, Constants.BACK_LEFT_OFFSET);
 
-  /** Creates a new Drivetrain. */
-  private Drivetrain() {
+  SwerveModule backRight = new SwerveModule(Constants.RIGHT_BACK_DRIVE, Constants.RIGHT_BACK_TURN,
+      Constants.RIGHT_BACK_CAN_CODER, Constants.BACK_RIGHT_OFFSET);
+
+  public Drivetrain() {
 
   }
 
-  
+  public double getGyroAngle() {
 
-  public void setDriveMotor (TalonFX driveMotor, double speed) {
+    double angle = gyro.getAngle();
 
-    driveMotor.set(TalonFXControlMode.PercentOutput, speed);
+    SmartDashboard.putNumber("gyro angle", angle);
+
+    return angle;
   }
 
+  public void setDrive(double xFeetPerSecond, double yFeetPerSecond, double degreesPerSecond, boolean fieldRelative) {
 
-  public void setTurnMotor (CANSparkMax turnMotor, double speed) {
+    if (fieldRelative) {
 
-    turnMotor.set(speed);
-  }
+      speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+          xFeetPerSecond * Constants.FEET_TO_METERS,
+          yFeetPerSecond * Constants.FEET_TO_METERS,
+          degreesPerSecond * Constants.DEGREES_TO_RADIANS,
+          Rotation2d.fromDegrees(getGyroAngle()));
 
+    } else {
 
-
-  public double getDriveEncoder (TalonFX driveMotor) {
-
-    double dEncoder = driveMotor.getSelectedSensorPosition() / Constants.TICKS_PER_FOOT;
-
-    System.out.println("Drive Encoder: " + dEncoder);
-
-    return dEncoder;
-  }
-
-
-
-  public double getTurnEncoder (CANSparkMax turnMotor) {
-
-    double tEncoder = turnMotor.getEncoder().getPosition() / Constants.TICKS_PER_REV;
-
-    System.out.println("Turn Encoder " + tEncoder);
-
-    return tEncoder;
-  }
-
-
-  
-
-  
-
-  public void switchMotors() {
-    if (index > arrayLength - 2) {
-      index = -1;
+      speeds = new ChassisSpeeds(
+          xFeetPerSecond * Constants.FEET_TO_METERS,
+          yFeetPerSecond * Constants.FEET_TO_METERS,
+          degreesPerSecond * Constants.DEGREES_TO_RADIANS);
     }
 
-    index++;
-    System.out.println("index = " + index);
+    SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(speeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, Constants.MAX_MODULE_SPEED); // sets module max speed
 
+    SmartDashboard.putNumber("kinematics output drive ", moduleStates[0].speedMetersPerSecond * Constants.METERS_TO_FEET);
+    SmartDashboard.putNumber("kinematics output turn ", moduleStates[0].angle.getDegrees());
 
-    if (index != 0) {
-
-      //Turn off the previous module
-      setDriveMotor(driveMotors[index-1], 0);
-      setTurnMotor(turnMotors[index-1], 0);
-
-    } else if (index == 0) {
-
-      //Turn off the previous module if index=0
-      setDriveMotor(driveMotors[arrayLength-1], 0);
-      setTurnMotor(turnMotors[arrayLength-1], 0);
-    }
+    frontLeft.setState(moduleStates[0]);
+    frontRight.setState(moduleStates[1]);
+    backLeft.setState(moduleStates[2]);
+    backRight.setState(moduleStates[3]);
   }
 
-
-
-
-  public void swerveTest() {
-
-      setDriveMotor(driveMotors[index], .2);
-      setTurnMotor(turnMotors[index], .2);
-  }
-
-
-
-
-  public void allAtOnce() {
-    
-    setDriveMotor(driveMotors[0], .2);
-    setDriveMotor(driveMotors[1], .2);
-    setDriveMotor(driveMotors[2], .2);
-    setDriveMotor(driveMotors[3], .2);
-
-    setTurnMotor(turnMotors[0], .2);
-    setTurnMotor(turnMotors[1], .2);
-    setTurnMotor(turnMotors[2], .2);
-    setTurnMotor(turnMotors[3], .2);
-
-
-    // for (int i = 0; i<arrayLength; i++) {
-    //   setDriveMotor(driveMotors[i], .2);
-    // }
-
-    // for (int i = 0; i<arrayLength; i++) {
-    //   setTurnMotor(turnMotors[i], .2);
-    // }
-
-
-
-  }
-
-
-
-
-  public static Drivetrain getDrivetrain() {
+  public static Drivetrain getInstance() {
     if (drivetrain == null) {
       drivetrain = new Drivetrain();
     }
