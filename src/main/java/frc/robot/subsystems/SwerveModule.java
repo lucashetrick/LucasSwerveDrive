@@ -88,15 +88,19 @@ public class SwerveModule extends SubsystemBase {
     return new SwerveModuleState(getDriveEncoder(), new Rotation2d(getTurnEncoder()));
   }
 
+
+
   public void setState(SwerveModuleState desiredState) {
 
+    
     // SwerveModuleState optimized = SwerveModuleState.optimize(desiredState, new
     // Rotation2d(getTurnEncoder()*Constants.DEGREES_TO_RADIANS));
 
     SmartDashboard.putNumber("setting drive as ", desiredState.speedMetersPerSecond * Constants.METERS_TO_FEET);
 
-    // setDriveMotorVelocity(optimized.speedMetersPerSecond *
+    // setDriveMotorVelocity(optimized.speedMetersPerSecond *          
     // Constants.METERS_TO_FEET);
+
     setDriveMotorVelocity(desiredState.speedMetersPerSecond * Constants.METERS_TO_FEET);
 
     SmartDashboard.putNumber("setting optimized turn setpoint as ", desiredState.angle.getDegrees());

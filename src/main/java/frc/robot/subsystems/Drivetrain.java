@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -17,7 +18,7 @@ import frc.robot.Constants;
 public class Drivetrain extends SubsystemBase {
 
   private static Drivetrain drivetrain;
-  AHRS gyro = new AHRS();
+  AHRS gyro = new AHRS(I2C.Port.kOnboard);
   ChassisSpeeds speeds;
 
   // locations of the modules
@@ -52,6 +53,8 @@ public class Drivetrain extends SubsystemBase {
 
   public Drivetrain() {
 
+    gyro.reset();
+
   }
 
   public double getGyroAngle() {
@@ -71,7 +74,7 @@ public class Drivetrain extends SubsystemBase {
           xFeetPerSecond * Constants.FEET_TO_METERS,
           yFeetPerSecond * Constants.FEET_TO_METERS,
           degreesPerSecond * Constants.DEGREES_TO_RADIANS,
-          Rotation2d.fromDegrees(getGyroAngle()));
+          Rotation2d.fromDegrees(-getGyroAngle())); // negative because gyro reads differently than wpilib
 
     } else {
 

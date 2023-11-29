@@ -34,10 +34,10 @@ public class SwerveTeleop extends CommandBase {
 
     drivetrain.setDrive(
         // applying deadband and setting drive
-        MathUtil.applyDeadband(oi.getLeftX(), .05)*Constants.MAX_MODULE_SPEED,
-        MathUtil.applyDeadband(oi.getLeftY(), .05)*Constants.MAX_MODULE_SPEED,
-        MathUtil.applyDeadband(oi.getRightX(), .05)*90,
-        false);
+        MathUtil.applyDeadband(oi.getLeftY(), .05)*Constants.OI_DRIVE_SPEED_RATIO,   // flipped (frames of reference)
+        MathUtil.applyDeadband(oi.getLeftX(), .05)*Constants.OI_DRIVE_SPEED_RATIO,
+        MathUtil.applyDeadband(oi.getRightX(), .05)*Constants.OI_TURN_SPEED_RATIO,
+        true);
   }
 
   // Called once the command ends or is interrupted.

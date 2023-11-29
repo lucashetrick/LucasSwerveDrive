@@ -52,14 +52,14 @@ public final class Constants {
 
   // Turning Motor PID Constants
   public static final double TURN_KP = .01;
-  public static final double TURN_KD = .001;
+  public static final double TURN_KD = 0;//.003;
   public static final double TURN_KI = 0;
   public static final double TURN_PID_LOW_LIMIT = -.8;
   public static final double TURN_PID_HIGH_LIMIT = .8;
 
   // Velocity Mode PID Constants
   public static final double DRIVE_KP = .12;
-  public static final double DRIVE_KD = 0;
+  public static final double DRIVE_KD = .012; // used to be 0
   public static final double DRIVE_KI = 0;
   public static final double DRIVE_KF = 0;
 
@@ -74,13 +74,15 @@ public final class Constants {
   public static final double RADIANS_TO_DEGREES = 57.2958;
 
   // Can coder offsets
-  public static final double FRONT_LEFT_OFFSET = -163.4765625; // set this
-  public static final double FRONT_RIGHT_OFFSET = -46.40625; // set this
-  public static final double BACK_LEFT_OFFSET = 133.681640625; // set this
-  public static final double BACK_RIGHT_OFFSET = 10.01953125; // set this
+  public static final double FRONT_LEFT_OFFSET = 190.283203125; // set this
+  public static final double FRONT_RIGHT_OFFSET = 314.208984375; // set this
+  public static final double BACK_LEFT_OFFSET = 134.033203125; // set this
+  public static final double BACK_RIGHT_OFFSET = 13.623046875; // set this
 
-  // speeds
-  public static final double MAX_MODULE_SPEED = 10 * FEET_TO_METERS;
+  // Speeds
+  public static final double MAX_MODULE_SPEED = 20 * FEET_TO_METERS; // used to be 10 - max speed that the module can go
+  public static final double OI_DRIVE_SPEED_RATIO = 15.0; // max speed input is 15 fps in direction
+  public static final double OI_TURN_SPEED_RATIO = 180;  // max turn input in 180 degrees per second
 
   
   public static class OperatorConstants {
