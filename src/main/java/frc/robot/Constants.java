@@ -51,7 +51,7 @@ public final class Constants {
 
 
   // Turning Motor PID Constants
-  public static final double TURN_KP = .01;
+  public static final double TURN_KP = .005;
   public static final double TURN_KD = 0;//.003;
   public static final double TURN_KI = 0;
   public static final double TURN_PID_LOW_LIMIT = -.8;
@@ -64,8 +64,8 @@ public final class Constants {
   public static final double DRIVE_KF = 0;
 
   // Module translations
-  public static final double TRANSLATION_X = 1.25; // set this
-  public static final double TRANSLATION_Y = 1.25; // set this
+  public static final double TRANSLATION_X = 1.895833333; // set this
+  public static final double TRANSLATION_Y = 1.895833333; // set this
 
   // Conversions
   public static final double METERS_TO_FEET = 3.28084;
@@ -82,7 +82,7 @@ public final class Constants {
   // Speeds
   public static final double MAX_MODULE_SPEED = 20 * FEET_TO_METERS; // used to be 10 - max speed that the module can go
   public static final double OI_DRIVE_SPEED_RATIO = 15.0; // max speed input is 15 fps in direction
-  public static final double OI_TURN_SPEED_RATIO = 180;  // max turn input in 180 degrees per second
+  public static final double OI_TURN_SPEED_RATIO = 360;  // max turn input in 180 degrees per second
 
   
   public static class OperatorConstants {

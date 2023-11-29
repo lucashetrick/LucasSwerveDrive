@@ -53,7 +53,16 @@ public class Drivetrain extends SubsystemBase {
 
   public Drivetrain() {
 
+    gyro.calibrate();
+
+    while (gyro.isCalibrating()) {
+      SmartDashboard.putBoolean("is calibrated", false);
+    }
+
+    SmartDashboard.putBoolean("is calibrated", true);
+
     gyro.reset();
+
 
   }
 

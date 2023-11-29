@@ -34,7 +34,7 @@ public class SwerveModule extends SubsystemBase {
     turnMotor = new CANSparkMax(turnMotorId, MotorType.kBrushless);
     turnEncoder = new CANCoder(turnEncoderId);
 
-    // turnEncoder.configMagnetOffset(turnEncoderOffset); // sets encoder so 0 is forward
+    turnEncoder.configMagnetOffset(-turnEncoderOffset); // sets encoder so 0 is forward
     turnController.enableContinuousInput(-180, 180); // Pid controller will loop from -180 to 180 continuously
     turnEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180); // encoder reads -180 to 180
 
@@ -76,7 +76,7 @@ public class SwerveModule extends SubsystemBase {
 
   public double getTurnEncoder() { // gets turn encoder as degrees, -180 180
 
-    double angle = turnEncoder.getPosition();  // gets the absoulte position of the encoder. getPosition() returns relative position.
+    double angle = turnEncoder.getAbsolutePosition();  // gets the absoulte position of the encoder. getPosition() returns relative position.
 
     SmartDashboard.putNumber("turn encoder", angle);
 
@@ -93,19 +93,19 @@ public class SwerveModule extends SubsystemBase {
   public void setState(SwerveModuleState desiredState) {
 
     
-    // SwerveModuleState optimized = SwerveModuleState.optimize(desiredState, new
-    // Rotation2d(getTurnEncoder()*Constants.DEGREES_TO_RADIANS));
+    SwerveModuleState optimized = SwerveModuleState.optimize(desiredState, new
+    Rotation2d(getTurnEncoder()*Constants.DEGREES_TO_RADIANS));
 
-    SmartDashboard.putNumber("setting drive as ", desiredState.speedMetersPerSecond * Constants.METERS_TO_FEET);
+    SmartDashboard.putNumber("setting drive as ", optimized.speedMetersPerSecond * Constants.METERS_TO_FEET);
 
     // setDriveMotorVelocity(optimized.speedMetersPerSecond *          
     // Constants.METERS_TO_FEET);
 
-    setDriveMotorVelocity(desiredState.speedMetersPerSecond * Constants.METERS_TO_FEET);
+    setDriveMotorVelocity(optimized.speedMetersPerSecond * Constants.METERS_TO_FEET);
 
     SmartDashboard.putNumber("setting optimized turn setpoint as ", desiredState.angle.getDegrees());
 
-    turnController.setSetpoint(desiredState.angle.getDegrees()); // set setpoint
+    turnController.setSetpoint(optimized.angle.getDegrees()); // set setpoint
 
     double speed = -turnController.calculate(getTurnEncoder()); // calculate speed
 
