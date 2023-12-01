@@ -4,11 +4,15 @@
 
 package frc.robot.subsystems;
 
+
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,6 +24,7 @@ public class Drivetrain extends SubsystemBase {
   private static Drivetrain drivetrain;
   AHRS gyro = new AHRS(I2C.Port.kOnboard);
   ChassisSpeeds speeds;
+  Pose2d pose;
 
   // locations of the modules
   Translation2d leftFrontLocation = new Translation2d(Constants.FEET_TO_METERS * Constants.TRANSLATION_X,
@@ -34,10 +39,6 @@ public class Drivetrain extends SubsystemBase {
   Translation2d rightBackLocation = new Translation2d(-Constants.FEET_TO_METERS * Constants.TRANSLATION_X,
       -Constants.FEET_TO_METERS * Constants.TRANSLATION_Y);
 
-      
-  SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-      leftFrontLocation, rightFrontLocation, leftBackLocation, rightBackLocation);
-
 
   SwerveModule frontLeft = new SwerveModule(Constants.LEFT_FRONT_DRIVE, Constants.LEFT_FRONT_TURN,
       Constants.LEFT_FRONT_CAN_CODER, Constants.FRONT_LEFT_OFFSET);
@@ -51,29 +52,43 @@ public class Drivetrain extends SubsystemBase {
   SwerveModule backRight = new SwerveModule(Constants.RIGHT_BACK_DRIVE, Constants.RIGHT_BACK_TURN,
       Constants.RIGHT_BACK_CAN_CODER, Constants.BACK_RIGHT_OFFSET);
 
+
+  SwerveDriveKinematics kinematics = new SwerveDriveKinematics( // creating kinematics
+      leftFrontLocation, rightFrontLocation, leftBackLocation, rightBackLocation);
+
+
+  SwerveDriveOdometry odometry = new SwerveDriveOdometry(
+      kinematics,
+      Rotation2d.fromDegrees(getGyroAngle()), // creating odometry
+      new SwerveModulePosition[] {
+          frontLeft.getPosition(),
+          frontRight.getPosition(),
+          backLeft.getPosition(),
+          backRight.getPosition()
+      });
+
+
   public Drivetrain() {
 
     gyro.calibrate();
 
     while (gyro.isCalibrating()) {
+
       SmartDashboard.putBoolean("is calibrated", false);
     }
 
     SmartDashboard.putBoolean("is calibrated", true);
-
     gyro.reset();
-
-
   }
+
 
   public double getGyroAngle() {
 
     double angle = gyro.getAngle();
-
     SmartDashboard.putNumber("gyro angle", angle);
-
     return angle;
   }
+
 
   public void setDrive(double xFeetPerSecond, double yFeetPerSecond, double degreesPerSecond, boolean fieldRelative) {
 
@@ -96,7 +111,8 @@ public class Drivetrain extends SubsystemBase {
     SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, Constants.MAX_MODULE_SPEED); // sets module max speed
 
-    SmartDashboard.putNumber("kinematics output drive ", moduleStates[0].speedMetersPerSecond * Constants.METERS_TO_FEET);
+    SmartDashboard.putNumber("kinematics output drive ",
+        moduleStates[0].speedMetersPerSecond * Constants.METERS_TO_FEET);
     SmartDashboard.putNumber("kinematics output turn ", moduleStates[0].angle.getDegrees());
 
     frontLeft.setState(moduleStates[0]);
@@ -104,6 +120,24 @@ public class Drivetrain extends SubsystemBase {
     backLeft.setState(moduleStates[2]);
     backRight.setState(moduleStates[3]);
   }
+
+
+  @Override
+  public void periodic() {
+    
+    pose = odometry.update(Rotation2d.fromDegrees(getGyroAngle()),
+        new SwerveModulePosition[] {
+            frontLeft.getPosition(),
+            frontRight.getPosition(),
+            backLeft.getPosition(),
+            backRight.getPosition()
+        });
+
+    SmartDashboard.putNumber("odometry x", pose.getX());
+    SmartDashboard.putNumber("odometry y", pose.getY());
+    SmartDashboard.putNumber("odometry rot", pose.getRotation().getDegrees());
+  }
+
 
   public static Drivetrain getInstance() {
     if (drivetrain == null) {

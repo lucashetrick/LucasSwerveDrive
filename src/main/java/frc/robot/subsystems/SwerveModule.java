@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -34,7 +35,7 @@ public class SwerveModule extends SubsystemBase {
     turnMotor = new CANSparkMax(turnMotorId, MotorType.kBrushless);
     turnEncoder = new CANCoder(turnEncoderId);
 
-    turnEncoder.configMagnetOffset(-turnEncoderOffset); // sets encoder so 0 is forward
+    turnEncoder.configMagnetOffset(-turnEncoderOffset); // sets encoder so 0 is forward - negative just makes it work
     turnController.enableContinuousInput(-180, 180); // Pid controller will loop from -180 to 180 continuously
     turnEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180); // encoder reads -180 to 180
 
@@ -54,7 +55,7 @@ public class SwerveModule extends SubsystemBase {
 
   public void setDriveMotorVelocity(double feetPerSecond) { // sets drive motor in velocity mode (set feet per second)
 
-    double speed = (Constants.TICKS_PER_FOOT * feetPerSecond) / 10.0;
+    double speed = (feetPerSecond * Constants.TICKS_PER_FOOT) / 10.0;
     SmartDashboard.putNumber("velocity mode ticks speed", speed);
     SmartDashboard.putNumber("Velocity error", driveMotor.getClosedLoopError());
     driveMotor.set(TalonFXControlMode.Velocity, speed);
@@ -65,36 +66,48 @@ public class SwerveModule extends SubsystemBase {
     turnMotor.set(speed);
   }
 
-  public double getDriveEncoder() { // gets drive encoder as distance traveled in feet
+  public double getDriveEncoderPosition() {             // gets drive encoder as distance traveled in feet
 
     double distance = driveMotor.getSelectedSensorPosition() / Constants.TICKS_PER_FOOT;
-
     SmartDashboard.putNumber("drive encoder", distance);
-
     return distance;
   }
 
-  public double getTurnEncoder() { // gets turn encoder as degrees, -180 180
+  public double getDriveEncoderVelocity() {             // returns drive encoder velocity in feet per second
+
+    double feetPerSecond = (driveMotor.getSelectedSensorVelocity() / Constants.TICKS_PER_FOOT) * 10;
+    SmartDashboard.putNumber("drive encoder velocity", feetPerSecond);
+    return feetPerSecond;
+  }
+
+
+  public double getTurnEncoder() {                      // gets turn encoder as degrees, -180 180
 
     double angle = turnEncoder.getAbsolutePosition();  // gets the absoulte position of the encoder. getPosition() returns relative position.
-
     SmartDashboard.putNumber("turn encoder", angle);
-
     return angle;
   }
 
-  public SwerveModuleState getState() {
+  // public SwerveModuleState getState() {
 
-    return new SwerveModuleState(getDriveEncoder(), new Rotation2d(getTurnEncoder()));
+  //   return new SwerveModuleState(
+  //     getDriveEncoderVelocity() * Constants.FEET_TO_METERS, new Rotation2d(getTurnEncoder() * Constants.DEGREES_TO_RADIANS));
+  // }
+
+
+  public SwerveModulePosition getPosition() {
+
+    return new SwerveModulePosition(
+      getDriveEncoderPosition() * Constants.FEET_TO_METERS, Rotation2d.fromDegrees(getTurnEncoder()));
   }
 
 
 
   public void setState(SwerveModuleState desiredState) {
 
-    
-    SwerveModuleState optimized = SwerveModuleState.optimize(desiredState, new
-    Rotation2d(getTurnEncoder()*Constants.DEGREES_TO_RADIANS));
+    SwerveModuleState optimized = SwerveModuleState.optimize(
+      desiredState, 
+      new Rotation2d(getTurnEncoder() * Constants.DEGREES_TO_RADIANS));
 
     SmartDashboard.putNumber("setting drive as ", optimized.speedMetersPerSecond * Constants.METERS_TO_FEET);
 
