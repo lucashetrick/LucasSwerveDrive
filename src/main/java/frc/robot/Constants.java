@@ -81,9 +81,14 @@ public final class Constants {
 
   // Speeds
   public static final double MAX_MODULE_SPEED = 20 * FEET_TO_METERS; // used to be 10 - max speed that the module can go
-  public static final double OI_DRIVE_SPEED_RATIO = 15.0; // max speed input is 15 fps in direction
-  public static final double OI_TURN_SPEED_RATIO = 360;  // max turn input in 180 degrees per second
+  public static final double OI_DRIVE_SPEED_RATIO = 7.0; // max speed input is 15 fps in direction -- FAST
+  public static final double OI_TURN_SPEED_RATIO = 360;  // max turn input in 360 degrees per second
+  public static final double MAX_TRAJECTORY_SPEED = 7.0 * FEET_TO_METERS; // max is 10 feet per second trajectory
+  public static final double MAX_TRAJECTORY_ACCELERATION = 7.0 * FEET_TO_METERS; // max acceleration is 10 fps squared
 
+  // Field dimensions
+  public static final double FIELD_X_LENGTH = 26.291667; // feet
+  public static final double FIELD_Y_LENGTH = 54.2708333; // feet
   
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;

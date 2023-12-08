@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -23,6 +23,7 @@ public class Drivetrain extends SubsystemBase {
 
   private static Drivetrain drivetrain;
   AHRS gyro = new AHRS(I2C.Port.kOnboard);
+  private final Field2d odometryFieldPos = new Field2d();
   ChassisSpeeds speeds;
   Pose2d pose;
 
@@ -65,7 +66,8 @@ public class Drivetrain extends SubsystemBase {
           frontRight.getPosition(),
           backLeft.getPosition(),
           backRight.getPosition()
-      });
+      }); 
+
 
 
   public Drivetrain() {
@@ -73,13 +75,21 @@ public class Drivetrain extends SubsystemBase {
     gyro.calibrate();
 
     while (gyro.isCalibrating()) {
-
       SmartDashboard.putBoolean("is calibrated", false);
     }
 
     SmartDashboard.putBoolean("is calibrated", true);
+
     gyro.reset();
+
+
+    resetOdometry(new Pose2d((Constants.FIELD_X_LENGTH-2) * Constants.FEET_TO_METERS, 
+    (Constants.FIELD_Y_LENGTH-2) * Constants.FEET_TO_METERS,
+    Rotation2d.fromDegrees(getGyroAngle())));
+
+    SmartDashboard.putData("Field Pos", odometryFieldPos);
   }
+
 
 
   public double getGyroAngle() {
@@ -90,6 +100,23 @@ public class Drivetrain extends SubsystemBase {
   }
 
 
+
+  public void resetOdometry(Pose2d position) {
+
+    odometry.resetPosition(
+      Rotation2d.fromDegrees(getGyroAngle()), 
+      new SwerveModulePosition[] {
+      frontLeft.getPosition(),
+      frontRight.getPosition(),
+      backLeft.getPosition(),
+      backRight.getPosition()}, 
+      position);
+
+    SmartDashboard.putBoolean("odometry reset pos", true);
+  }
+
+
+  
   public void setDrive(double xFeetPerSecond, double yFeetPerSecond, double degreesPerSecond, boolean fieldRelative) {
 
     if (fieldRelative) {
@@ -122,6 +149,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
 
+
   @Override
   public void periodic() {
     
@@ -133,12 +161,11 @@ public class Drivetrain extends SubsystemBase {
             backRight.getPosition()
         });
 
-    SmartDashboard.putNumber("odometry x", pose.getX());
-    SmartDashboard.putNumber("odometry y", pose.getY());
-    SmartDashboard.putNumber("odometry rot", pose.getRotation().getDegrees());
+    odometryFieldPos.setRobotPose(odometry.getPoseMeters());
   }
 
 
+  
   public static Drivetrain getInstance() {
     if (drivetrain == null) {
       drivetrain = new Drivetrain();
