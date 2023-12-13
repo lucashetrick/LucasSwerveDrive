@@ -4,10 +4,16 @@
 
 package frc.robot;
 
+import java.util.List;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.SwerveTeleop;
+import frc.robot.commands.TrajectoryAuto;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 
@@ -28,11 +34,17 @@ public class Robot extends TimedRobot {
   private OI oi = OI.getInstance();
 
   private SwerveTeleop swerveteleop = new SwerveTeleop(drivetrain, oi);
+  private TrajectoryAuto trajectoryAuto = new TrajectoryAuto(
+    drivetrain, 
+    new Pose2d(0 * Constants.FEET_TO_METERS, 0 * Constants.FEET_TO_METERS, Rotation2d.fromDegrees(0)), 
+    List.of(new Translation2d(10 * Constants.FEET_TO_METERS, 0 * Constants.FEET_TO_METERS)), 
+    new Pose2d(20 * Constants.FEET_TO_METERS, 0 * Constants.FEET_TO_METERS, Rotation2d.fromDegrees(0)));
 
  // private RobotContainer m_robotContainer;
 
   /**
-   * This function is run when the robot is first started up and should be used
+   * This function is run when the robot is first st
+   * arted up and should be used
    * for any
    * initialization code.
    */
@@ -88,6 +100,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    trajectoryAuto.schedule();
   }
 
   /** This function is called periodically during autonomous. */

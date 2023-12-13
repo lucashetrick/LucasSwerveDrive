@@ -83,7 +83,7 @@ public class SwerveModule extends SubsystemBase {
 
   public double getTurnEncoder() {                      // gets turn encoder as degrees, -180 180
 
-    double angle = turnEncoder.getAbsolutePosition();  // gets the absoulte position of the encoder. getPosition() returns relative position.
+    double angle = turnEncoder.getAbsolutePosition();   // gets the absoulte position of the encoder. getPosition() returns relative position.
     SmartDashboard.putNumber("turn encoder", angle);
     return angle;
   }

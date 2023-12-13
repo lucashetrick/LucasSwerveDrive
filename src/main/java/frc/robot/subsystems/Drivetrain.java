@@ -60,7 +60,7 @@ public class Drivetrain extends SubsystemBase {
 
   SwerveDriveOdometry odometry = new SwerveDriveOdometry(
       kinematics,
-      Rotation2d.fromDegrees(-getGyroAngle()), // creating odometry
+      Rotation2d.fromDegrees(getGyroAngle()), // creating odometry
       new SwerveModulePosition[] {
           frontLeft.getPosition(),
           frontRight.getPosition(),
@@ -83,9 +83,9 @@ public class Drivetrain extends SubsystemBase {
     gyro.reset();
 
 
-    resetOdometry(new Pose2d((Constants.FIELD_Y_LENGTH-2) * Constants.FEET_TO_METERS, 
-    (Constants.FIELD_X_LENGTH-2) * Constants.FEET_TO_METERS,
-    Rotation2d.fromDegrees(-getGyroAngle())));
+    resetOdometry(new Pose2d((Constants.FIELD_Y_LENGTH-1.895833333) * Constants.FEET_TO_METERS, 
+    (Constants.FIELD_X_LENGTH-1.895833333) * Constants.FEET_TO_METERS,
+    Rotation2d.fromDegrees(getGyroAngle())));
 
     SmartDashboard.putData("Field Pos", odometryFieldPos);
   }
@@ -116,6 +116,11 @@ public class Drivetrain extends SubsystemBase {
   }
 
 
+  public Pose2d getOdometry() {
+
+    return odometry.getPoseMeters();
+  }
+
   
   public void setDrive(double xFeetPerSecond, double yFeetPerSecond, double degreesPerSecond, boolean fieldRelative) {
 
@@ -138,22 +143,23 @@ public class Drivetrain extends SubsystemBase {
     SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, Constants.MAX_MODULE_SPEED); // sets module max speed
 
-    SmartDashboard.putNumber("kinematics output drive ",
-        moduleStates[0].speedMetersPerSecond * Constants.METERS_TO_FEET);
-    SmartDashboard.putNumber("kinematics output turn ", moduleStates[0].angle.getDegrees());
-
-    frontLeft.setState(moduleStates[0]);
-    frontRight.setState(moduleStates[1]);
-    backLeft.setState(moduleStates[2]);
-    backRight.setState(moduleStates[3]);
+    setModuleStates(moduleStates);
   }
 
+
+  public void setModuleStates(SwerveModuleState[] states) {
+
+    frontLeft.setState(states[0]);
+    frontRight.setState(states[1]);
+    backLeft.setState(states[2]);
+    backRight.setState(states[3]);
+  }
 
 
   @Override
   public void periodic() {
     
-    pose = odometry.update(Rotation2d.fromDegrees(-getGyroAngle()),
+    pose = odometry.update(Rotation2d.fromDegrees(getGyroAngle()),
         new SwerveModulePosition[] {
             frontLeft.getPosition(),
             frontRight.getPosition(),
