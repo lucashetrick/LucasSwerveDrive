@@ -34,11 +34,15 @@ public class Robot extends TimedRobot {
   private OI oi = OI.getInstance();
 
   private SwerveTeleop swerveteleop = new SwerveTeleop(drivetrain, oi);
-  private TrajectoryAuto trajectoryAuto = new TrajectoryAuto(
-    drivetrain, 
-    new Pose2d(0 * Constants.FEET_TO_METERS, 0 * Constants.FEET_TO_METERS, Rotation2d.fromDegrees(0)), 
-    List.of(new Translation2d(10 * Constants.FEET_TO_METERS, 0 * Constants.FEET_TO_METERS)), 
-    new Pose2d(20 * Constants.FEET_TO_METERS, 0 * Constants.FEET_TO_METERS, Rotation2d.fromDegrees(0)));
+  // private TrajectoryAuto trajectoryAuto = new TrajectoryAuto(
+  //   drivetrain, 
+  //   new Pose2d(0 * Constants.FEET_TO_METERS, 0 * Constants.FEET_TO_METERS, Rotation2d.fromDegrees(0)), 
+  //   List.of(new Translation2d(10 * Constants.FEET_TO_METERS, 0 * Constants.FEET_TO_METERS)), 
+  //   new Pose2d(20 * Constants.FEET_TO_METERS, 0 * Constants.FEET_TO_METERS, Rotation2d.fromDegrees(90)));
+  private TrajectoryAuto trajectoryAuto = new TrajectoryAuto(drivetrain, 
+  List.of(new Pose2d(0 * Constants.FEET_TO_METERS, 0 * Constants.FEET_TO_METERS, Rotation2d.fromDegrees(0)), 
+          new Pose2d(10 * Constants.FEET_TO_METERS, 0 * Constants.FEET_TO_METERS, Rotation2d.fromDegrees(90)),
+          new Pose2d(20 * Constants.FEET_TO_METERS, 0 * Constants.FEET_TO_METERS, Rotation2d.fromDegrees(180))));
 
  // private RobotContainer m_robotContainer;
 

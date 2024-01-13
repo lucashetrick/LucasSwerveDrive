@@ -83,7 +83,7 @@ public final class Constants {
   public static final double MAX_MODULE_SPEED = 20 * FEET_TO_METERS; // used to be 10 - max speed that the module can go
   public static final double OI_DRIVE_SPEED_RATIO = 7.0; // max speed input is 15 fps in direction -- FAST
   public static final double OI_TURN_SPEED_RATIO = 360;  // max turn input in 360 degrees per second
-  public static final double MAX_TRAJECTORY_SPEED = 3.0 * FEET_TO_METERS; // max is 10 feet per second trajectory
+  public static final double MAX_TRAJECTORY_SPEED = 2.0 * FEET_TO_METERS; // max is 10 feet per second trajectory
   public static final double MAX_TRAJECTORY_ACCELERATION = 30 * FEET_TO_METERS; // max acceleration is 10 fps squared
 
   // Field dimensions

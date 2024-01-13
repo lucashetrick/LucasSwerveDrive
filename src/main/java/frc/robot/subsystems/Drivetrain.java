@@ -60,7 +60,7 @@ public class Drivetrain extends SubsystemBase {
 
   SwerveDriveOdometry odometry = new SwerveDriveOdometry(
       kinematics,
-      Rotation2d.fromDegrees(getGyroAngle()), // creating odometry
+      Rotation2d.fromDegrees(-getGyroAngle()), // creating odometry
       new SwerveModulePosition[] {
           frontLeft.getPosition(),
           frontRight.getPosition(),
@@ -85,7 +85,7 @@ public class Drivetrain extends SubsystemBase {
 
     resetOdometry(new Pose2d((Constants.FIELD_Y_LENGTH-1.895833333) * Constants.FEET_TO_METERS, 
     (Constants.FIELD_X_LENGTH-1.895833333) * Constants.FEET_TO_METERS,
-    Rotation2d.fromDegrees(getGyroAngle())));
+    Rotation2d.fromDegrees(180)));
 
     SmartDashboard.putData("Field Pos", odometryFieldPos);
   }
@@ -104,7 +104,7 @@ public class Drivetrain extends SubsystemBase {
   public void resetOdometry(Pose2d position) {
 
     odometry.resetPosition(
-      Rotation2d.fromDegrees(getGyroAngle()), 
+      Rotation2d.fromDegrees(-getGyroAngle()), 
       new SwerveModulePosition[] {
       frontLeft.getPosition(),
       frontRight.getPosition(),
@@ -159,7 +159,7 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     
-    pose = odometry.update(Rotation2d.fromDegrees(getGyroAngle()),
+    pose = odometry.update(Rotation2d.fromDegrees(-getGyroAngle()),
         new SwerveModulePosition[] {
             frontLeft.getPosition(),
             frontRight.getPosition(),
